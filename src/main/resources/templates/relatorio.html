@@ -8,12 +8,20 @@
 <h1>Gerar Relatório por Cliente e Período</h1>
 
 <form th:action="@{/relatorios}" method="get">
-    <label>Cliente:</label>
+    <label>Cliente (Obrigatório):</label>
     <select name="proprietarioId" required>
         <option value="">Selecione...</option>
         <option th:each="prop : ${listaProprietarios}"
                 th:value="${prop.id}"
                 th:text="${prop.nome}"></option>
+    </select>
+
+    <label>Serviço (Opcional):</label>
+    <select name="servicoId">
+        <option value="">Todos os serviços...</option>
+        <option th:each="serv : ${listaServicos}"
+                th:value="${serv.id}"
+                th:text="${serv.nome}"></option>
     </select>
 
     <label>Data Início:</label>
@@ -30,26 +38,38 @@
 <div th:if="${resultados != null}">
     <h2>Resultados da Busca</h2>
 
-    <table border="1">
-        <thead>
-        <tr>
-            <th>Data</th>
-            <th>Animal</th>
-            <th>Serviço</th>
-            <th>Valor (R$)</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="lan : ${resultados}">
-            <td th:text="${lan.data}"></td>
-            <td th:text="${lan.animal.nome}"></td>
-            <td th:text="${lan.servico.nome}"></td>
-            <td th:text="${lan.valorCobrado}"></td>
-        </tr>
-        </tbody>
-    </table>
+    <div th:if="${#lists.isEmpty(resultados)}">
+        <p style="color: red; font-weight: bold;">Nenhum serviço encontrado para este filtro.</p>
+    </div>
 
-    <h3 style="color: green;">Total do Período: R$ <span th:text="${valorTotal}">0.00</span></h3>
+    <div th:if="${!#lists.isEmpty(resultados)}">
+
+        <div style="background-color: #f0f0f0; padding: 10px; margin-bottom: 10px;">
+            <h4 th:text="'Cliente: ' + ${resultados[0].animal.proprietario.nome}"></h4>
+            <p th:text="'CPF: ' + ${resultados[0].animal.proprietario.cpf} + ' | Telefone: ' + ${resultados[0].animal.proprietario.telefone}"></p>
+        </div>
+
+        <table border="1">
+            <thead>
+            <tr>
+                <th>Data</th>
+                <th>Animal</th>
+                <th>Serviço</th>
+                <th>Valor (R$)</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="lan : ${resultados}">
+                <td th:text="${#temporals.format(lan.data, 'dd/MM/yyyy')}"></td>
+                <td th:text="${lan.animal.nome}"></td>
+                <td th:text="${lan.servico.nome}"></td>
+                <td th:text="${lan.valorCobrado}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <h3 style="color: green;">Total do Período: R$ <span th:text="${valorTotal}">0.00</span></h3>
+    </div>
 </div>
 
 <br>
