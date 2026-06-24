@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Pet Shop - Lançamentos</title>
+</head>
+<body>
+<h1>Histórico de Serviços Prestados</h1>
+
+<a th:href="@{/lancamentos/novo}">+ Lançar Novo Atendimento</a>
+<br><br>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>Data</th>
+        <th>Animal</th>
+        <th>Serviço</th>
+        <th>Valor Cobrado (R$)</th>
+        <th>Observações</th>
+        <th>Ações</th> </tr>
+    </thead>
+    <tbody>
+    <tr th:each="lan : ${listaLancamentos}">
+        <td th:text="${lan.data}"></td>
+        <td th:text="${lan.animal != null ? lan.animal.nome : 'N/A'}"></td>
+        <td th:text="${lan.servico != null ? lan.servico.nome : 'N/A'}"></td>
+        <td th:text="${lan.valorCobrado}"></td>
+        <td th:text="${lan.observacoes}"></td>
+        <td>
+            <a th:href="@{/lancamentos/editar/{id}(id=${lan.id})}">Editar</a> |
+            <a th:href="@{/lancamentos/excluir/{id}(id=${lan.id})}"
+               onclick="return confirm('Deseja excluir este lançamento?');">Excluir</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<br>
+<a th:href="@{/proprietarios}">Proprietários</a> |
+<a th:href="@{/animais}">Animais</a> |
+<a th:href="@{/servicos}">Serviços</a> |
+<a th:href="@{/relatorios}">Relatório</a>
+</body>
+</html>

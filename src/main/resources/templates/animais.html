@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Pet Shop - Animais</title>
+</head>
+<body>
+<h1>Lista de Animais</h1>
+
+<a th:href="@{/relatorios}">Ir para Lista de Relatório</a>
+<br><br>
+
+<a th:href="@{/lancamentos}"> Ir para Lista de Lançamentos</a>
+<br><br>
+
+<a th:href="@{/servicos}"> Ir para Lista de Serviços</a>
+<br><br>
+
+<a th:href="@{/proprietarios}">Ir para Proprietários</a>
+<br><br>
+
+<a th:href="@{/animais/novo}">+ Cadastrar Novo Pet</a>
+<br><br>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Foto</th>
+        <th>Nome</th>
+        <th>Espécie</th>
+        <th>Raça</th>
+        <th>Idade</th>
+        <th>Sexo</th>
+        <th>Peso</th>
+        <th>Dono</th>
+        <th>Ações</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="pet : ${listaAnimais}">
+        <td th:text="${pet.id}"></td>
+        <td>
+            <img th:if="${pet.fotoUrl != null}" th:src="@{/uploads/{foto}(foto=${pet.fotoUrl})}" alt="Foto do Pet" style="max-width: 50px; max-height: 50px; border-radius: 5px;" />
+            <span th:if="${pet.fotoUrl == null}">Sem Foto</span>
+        </td>
+        <td th:text="${pet.nome}"></td>
+        <td th:text="${pet.especie}"></td>
+        <td th:text="${pet.raca}"></td>
+        <td th:text="${pet.idade} != null ? ${pet.idade} + ' anos' : '-'"></td>
+        <td th:text="${pet.sexo}"></td>
+        <td th:text="${pet.peso} != null ? ${pet.peso} + ' kg' : '-'"></td>
+        <td th:text="${pet.proprietario != null ? pet.proprietario.nome : 'Sem Dono'}"></td>
+        <td>
+            <a th:href="@{/animais/editar/{id}(id=${pet.id})}">Editar</a> |
+            <a th:href="@{/animais/excluir/{id}(id=${pet.id})}"
+               onclick="return confirm('Excluir este pet?');">Excluir</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

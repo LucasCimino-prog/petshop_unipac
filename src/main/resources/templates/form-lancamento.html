@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Novo Lançamento</title>
+</head>
+<body>
+<h1>Lançar Serviço para Animal</h1>
+
+<div th:if="${mensagemErro}" style="color: red; font-weight: bold; background-color: #fee; padding: 10px; border: 1px solid red; margin-bottom: 15px;">
+    <span th:text="${mensagemErro}"></span>
+</div>
+
+
+<form th:action="@{/lancamentos/salvar}" th:object="${lancamento}" method="post">
+    <input type="hidden" th:field="*{id}" />
+
+    <div>
+        <label>Data:</label>
+        <input type="date" th:field="*{data}" required />
+    </div>
+    <br>
+    <div>
+        <label>Animal Cadastrado:</label>
+        <select th:field="*{animal}" required>
+            <option value="">Selecione o pet...</option>
+            <option th:each="pet : ${listaAnimais}"
+                    th:value="${pet.id}"
+                    th:text="${pet.nome}"></option>
+        </select>
+    </div>
+    <br>
+    <div>
+        <label>Serviço Realizado:</label>
+        <select th:field="*{servico}" id="selectServico" onchange="atualizarPreco()" required>
+            <option value="" data-preco="">Selecione o serviço...</option>
+            <option th:each="serv : ${listaServicos}"
+                    th:value="${serv.id}"
+                    th:text="${serv.nome}"
+                    th:data-preco="${serv.preco}"></option>
+        </select>
+    </div>
+    <br>
+    <div>
+        <label>Valor Cobrado (R$):</label>
+        <input type="number" step="0.01" th:field="*{valorCobrado}" id="inputValor" required />
+    </div>
+    <br>
+    <div>
+        <label>Observações:</label>
+        <textarea th:field="*{observacoes}" rows="3" cols="30" placeholder="Ex: Animal agitado durante o banho..."></textarea>
+    </div>
+    <br>
+
+    <button type="submit">Salvar Lançamento</button>
+    <a th:href="@{/lancamentos}">Cancelar</a>
+</form>
+<script>
+    function atualizarPreco() {
+        var select = document.getElementById("selectServico");
+
+        var opcaoSelecionada = select.options[select.selectedIndex];
+
+        var preco = opcaoSelecionada.getAttribute("data-preco");
+
+        var inputValor = document.getElementById("inputValor");
+        if (preco) {
+            inputValor.value = preco;
+        } else {
+            inputValor.value = "";
+        }
+    }
+</script>
+</body>
+</html>

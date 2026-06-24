@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório de Serviços</title>
+</head>
+<body>
+<h1>Gerar Relatório por Cliente e Período</h1>
+
+<form th:action="@{/relatorios}" method="get">
+    <label>Cliente:</label>
+    <select name="proprietarioId" required>
+        <option value="">Selecione...</option>
+        <option th:each="prop : ${listaProprietarios}"
+                th:value="${prop.id}"
+                th:text="${prop.nome}"></option>
+    </select>
+
+    <label>Data Início:</label>
+    <input type="date" name="dataInicio" required />
+
+    <label>Data Fim:</label>
+    <input type="date" name="dataFim" required />
+
+    <button type="submit">Buscar Histórico</button>
+</form>
+
+<hr>
+
+<div th:if="${resultados != null}">
+    <h2>Resultados da Busca</h2>
+
+    <table border="1">
+        <thead>
+        <tr>
+            <th>Data</th>
+            <th>Animal</th>
+            <th>Serviço</th>
+            <th>Valor (R$)</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="lan : ${resultados}">
+            <td th:text="${lan.data}"></td>
+            <td th:text="${lan.animal.nome}"></td>
+            <td th:text="${lan.servico.nome}"></td>
+            <td th:text="${lan.valorCobrado}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h3 style="color: green;">Total do Período: R$ <span th:text="${valorTotal}">0.00</span></h3>
+</div>
+
+<br>
+<a th:href="@{/proprietarios}">Proprietários</a> |
+<a th:href="@{/animais}">Animais</a> |
+<a th:href="@{/servicos}">Serviços</a> |
+<a th:href="@{/lancamentos}">Lançamentos</a>
+</body>
+</html>

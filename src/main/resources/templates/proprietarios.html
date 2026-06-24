@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Pet Shop - Proprietários</title>
+</head>
+<body>
+<h1>Lista de Proprietários</h1>
+
+<a th:href="@{/relatorios}">Ir para Lista de Relatório</a>
+<br><br>
+
+<a th:href="@{/lancamentos}"> Ir para Lista de Lançamentos</a>
+<br><br>
+
+<a th:href="@{/servicos}"> Ir para Lista de Serviços</a>
+<br><br>
+
+<a th:href="@{/animais}"> Ir para Lista de Animais</a>
+<br><br>
+
+<a th:href="@{/proprietarios/novo}">+ Cadastrar Novo Proprietário</a>
+<br><br>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>CPF</th> <th>Endereço Completo</th>
+        <th>Telefone</th>
+        <th>Email</th>
+        <th>Ações</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="prop : ${listaProprietarios}">
+        <td th:text="${prop.id}"></td>
+        <td th:text="${prop.nome}"></td>
+
+        <td th:text="${prop.cpf}"></td> <td th:text="${prop.rua + ', ' + prop.numero + ' - ' + prop.bairro}"></td>
+        <td th:text="${prop.telefone}"></td>
+        <td th:text="${prop.email}"></td>
+        <td>
+            <a th:href="@{/proprietarios/editar/{id}(id=${prop.id})}">Editar</a> |
+            <a th:href="@{/proprietarios/excluir/{id}(id=${prop.id})}"
+               onclick="return confirm('Tem certeza que deseja excluir este cliente?');">Excluir</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

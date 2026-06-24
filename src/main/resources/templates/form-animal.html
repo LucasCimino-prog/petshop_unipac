@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Novo Animal</title>
+</head>
+<body>
+<h1>Cadastrar Pet</h1>
+
+<div th:if="${mensagemErro}" style="color: red; font-weight: bold; background-color: #fee; padding: 10px; border: 1px solid red; margin-bottom: 15px;">
+    <span th:text="${mensagemErro}"></span>
+</div>
+
+<form th:action="@{/animais/salvar}" th:object="${animal}" method="post" enctype="multipart/form-data">
+    <input type="hidden" th:field="*{id}" />
+    <input type="hidden" th:field="*{fotoUrl}" />
+
+    <div>
+        <label>Nome do Pet:</label>
+        <input type="text" th:field="*{nome}" required />
+    </div>
+    <br>
+    <div>
+        <label>Espécie (Cachorro, Gato, etc):</label>
+        <input type="text" th:field="*{especie}" required />
+    </div>
+    <br>
+    <div>
+        <label>Raça:</label>
+        <input type="text" th:field="*{raca}" required />
+    </div>
+    <br>
+    <div>
+        <label>Idade (anos):</label>
+        <input type="number" th:field="*{idade}" required />
+    </div>
+    <br>
+    <div>
+        <label>Sexo:</label>
+        <select th:field="*{sexo}" required>
+            <option value="">Selecione...</option>
+            <option value="Masculino">Masculino</option>
+            <option value="Feminino">Feminino</option>
+        </select>
+    </div>
+    <br>
+    <div>
+        <label>Peso (Kg):</label>
+        <input type="number" step="0.01" th:field="*{peso}" required />
+    </div>
+    <br>
+    <div>
+        <label>Foto do Pet (Opcional):</label>
+        <input type="file" name="file" accept="image/*" />
+
+        <span th:if="${animal.fotoUrl != null}">
+                Foto atual: <span th:text="${animal.fotoUrl}"></span>
+            </span>
+    </div>
+    <br>
+    <div>
+        <label>Proprietário (Dono):</label>
+        <select th:field="*{proprietario}" required>
+            <option value="">Selecione um dono...</option>
+            <option th:each="prop : ${listaProprietarios}"
+                    th:value="${prop.id}"
+                    th:text="${prop.nome}"></option>
+        </select>
+    </div>
+    <br>
+
+    <button type="submit">Salvar Animal</button>
+    <a th:href="@{/animais}">Cancelar</a>
+</form>
+</body>
+</html>

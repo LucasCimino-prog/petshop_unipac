@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Novo Proprietário</title>
+</head>
+<body>
+<h1>Cadastrar Novo Proprietário</h1>
+
+<div th:if="${mensagemErro}" style="color: red; font-weight: bold; background-color: #fee; padding: 10px; border: 1px solid red; margin-bottom: 15px;">
+    <span th:text="${mensagemErro}"></span>
+</div>
+
+<form th:action="@{/proprietarios/salvar}" th:object="${proprietario}" method="post"
+      onsubmit="if(this.cpf.value.length !== 11) { alert('Erro: O CPF precisa ter exatamente 11 números.'); return false; } if(this.telefone.value.length !== 11) { alert('Erro: O celular precisa ter exatamente 11 números.'); return false; }">
+
+    <input type="hidden" th:field="*{id}" />
+
+    <div>
+        <label>Nome:</label>
+        <input type="text" th:field="*{nome}" required />
+    </div>
+    <br>
+    <div>
+        <label>CPF (Apenas números):</label>
+        <input type="text" th:field="*{cpf}"
+               required
+               maxlength="11"
+               pattern="\d{11}"
+               placeholder="Ex: 12345678900"
+               title="O CPF deve conter exatamente 11 números"
+               oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+    </div>
+    <br>
+    <div>
+        <label>Rua:</label>
+        <input type="text" th:field="*{rua}" required />
+    </div>
+    <br>
+    <div>
+        <label>Número:</label>
+        <input type="text" th:field="*{numero}" required
+               oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+    </div>
+    <br>
+    <div>
+        <label>Bairro:</label>
+        <input type="text" th:field="*{bairro}" required />
+    </div>
+    <br>
+    <div>
+        <label>Celular (DDD + Número):</label>
+        <input type="text" th:field="*{telefone}"
+               required
+               maxlength="11"
+               pattern="\d{11}"
+               placeholder="Ex: 32988887777"
+               title="O telefone deve conter exatamente 11 números"
+               oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+    </div>
+    <br>
+    <div>
+        <label>Email:</label>
+        <input type="email" th:field="*{email}" required placeholder="exemplo@email.com" />
+    </div>
+    <br>
+
+    <button type="submit">Salvar Proprietário</button>
+    <a th:href="@{/proprietarios}">Cancelar</a>
+
+</form>
+</body>
+</html>

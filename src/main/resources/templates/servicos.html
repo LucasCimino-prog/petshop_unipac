@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Pet Shop - Serviços</title>
+</head>
+<body>
+<h1>Lista de Serviços Disponíveis</h1>
+
+<a th:href="@{/servicos/novo}">+ Cadastrar Novo Serviço</a>
+<br><br>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Nome do Serviço</th>
+        <th>Descrição</th>
+        <th>Preço Base (R$)</th>
+        <th>Ações</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="serv : ${listaServicos}">
+        <td th:text="${serv.id}">1</td>
+        <td th:text="${serv.nome}">Banho</td>
+        <td th:text="${serv.descricao}">Banho com shampoo anti-pulgas</td>
+        <td th:text="${serv.preco}">50.0</td>
+        <td>
+            <a th:href="@{/servicos/editar/{id}(id=${serv.id})}">Editar</a> |
+            <a th:href="@{/servicos/excluir/{id}(id=${serv.id})}"
+               onclick="return confirm('Excluir este serviço?');">Excluir</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<br>
+<a th:href="@{/proprietarios}">Proprietários</a> |
+<a th:href="@{/animais}">Animais</a> |
+<a th:href="@{/lancamentos}">Lançamentos</a> |
+<a th:href="@{/relatorios}">Relatório</a>
+</body>
+</html>
