@@ -26,3 +26,6 @@ disciplina de Programação Orientada a Objetos.
 
 ## Autor
 Desenvolvido por **Lucas Cimino** - Ciência da Computação (UNIPAC Barbacena).
+
+## Observação
+Peço desculpas pois houve certas mudanças neste último commit, por isso o relatório pode se encontrar desatualizado, ja que não se pode "enviar de novo". 
