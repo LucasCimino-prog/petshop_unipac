@@ -3,42 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <title>Pet Shop - Serviços</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-<h1>Lista de Serviços Disponíveis</h1>
+<body class="bg-light">
 
-<a th:href="@{/servicos/novo}">+ Cadastrar Novo Serviço</a>
-<br><br>
+<div class="container mt-5">
 
-<table border="1">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Nome do Serviço</th>
-        <th>Descrição</th>
-        <th>Preço Base (R$)</th>
-        <th>Ações</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="serv : ${listaServicos}">
-        <td th:text="${serv.id}">1</td>
-        <td th:text="${serv.nome}">Banho</td>
-        <td th:text="${serv.descricao}">Banho com shampoo anti-pulgas</td>
-        <td th:text="${serv.preco}">50.0</td>
-        <td>
-            <a th:href="@{/servicos/editar/{id}(id=${serv.id})}">Editar</a> |
-            <a th:href="@{/servicos/excluir/{id}(id=${serv.id})}"
-               onclick="return confirm('Excluir este serviço?');">Excluir</a>
-        </td>
-    </tr>
-    </tbody>
-</table>
+    <!-- Cabeçalho e Botões Superiores -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary fw-bold">Lista de Serviços Disponíveis</h2>
+        <a th:href="@{/servicos/novo}" class="btn btn-success fw-bold">+ Cadastrar Novo Serviço</a>
+    </div>
 
-<br>
-<a th:href="@{/proprietarios}">Proprietários</a> |
-<a th:href="@{/animais}">Animais</a> |
-<a th:href="@{/lancamentos}">Lançamentos</a> |
-<a th:href="@{/relatorios}">Relatório</a>
+    <!-- Alerta de Erro -->
+    <div th:if="${mensagemErro}" class="alert alert-danger fw-bold shadow-sm mb-4" role="alert">
+        <span th:text="${mensagemErro}"></span>
+    </div>
+
+    <!-- Tabela de Serviços -->
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0 table-responsive">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="table-primary">
+                <tr>
+                    <th class="ps-4">ID</th>
+                    <th>Nome do Serviço</th>
+                    <th>Descrição</th>
+                    <th>Preço Base (R$)</th>
+                    <th class="text-center pe-4">Ações</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="serv : ${listaServicos}">
+                    <td class="ps-4" th:text="${serv.id}"></td>
+                    <td class="fw-semibold" th:text="${serv.nome}"></td>
+                    <td th:text="${serv.descricao}"></td>
+                    <td th:text="'R$ ' + ${serv.preco}"></td>
+                    <td class="text-center pe-4">
+                        <a th:href="@{/servicos/editar/{id}(id=${serv.id})}" class="btn btn-sm btn-outline-primary">Editar</a>
+                        <a th:href="@{/servicos/excluir/{id}(id=${serv.id})}"
+                           onclick="return confirm('Excluir este serviço?');" class="btn btn-sm btn-outline-danger">Excluir</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Navegação Inferior -->
+    <div class="mt-4 text-center">
+        <a th:href="@{/proprietarios}" class="btn btn-outline-secondary btn-sm">Proprietários</a>
+        <a th:href="@{/animais}" class="btn btn-outline-secondary btn-sm">Animais</a>
+        <a th:href="@{/lancamentos}" class="btn btn-outline-secondary btn-sm">Lançamentos</a>
+        <a th:href="@{/relatorios}" class="btn btn-outline-secondary btn-sm">Relatório</a>
+    </div>
+
+</div>
+
 </body>
 </html>

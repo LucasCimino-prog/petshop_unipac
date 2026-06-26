@@ -1,8 +1,12 @@
 package com.unipac.petshop.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
+@SQLDelete(sql = "UPDATE servico SET ativo = false WHERE id=?")
+@SQLRestriction("ativo = true")
 public class Servico {
 
     @Id
@@ -12,6 +16,17 @@ public class Servico {
     private String nome;
     private String descricao;
     private Double preco;
+
+    @Column(name = "ativo")
+    private boolean ativo = true;
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
+    }
 
     public Long getId() {
         return id;

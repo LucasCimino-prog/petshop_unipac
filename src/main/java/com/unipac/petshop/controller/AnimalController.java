@@ -2,6 +2,7 @@ package com.unipac.petshop.controller;
 
 import com.unipac.petshop.model.Animal;
 import com.unipac.petshop.repository.AnimalRepository;
+import com.unipac.petshop.repository.LancamentoServicoRepository;
 import com.unipac.petshop.repository.ProprietarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,7 +18,12 @@ public class AnimalController {
     private AnimalRepository animalRepository;
 
     @Autowired
+    private LancamentoServicoRepository lancamentoRepository;
+
+    @Autowired
     private ProprietarioRepository proprietarioRepository;
+    @Autowired
+    private LancamentoServicoRepository lancamentoServicoRepository;
 
     // Retorna a página com a tabela contendo todos os animais cadastrados no banco
     @GetMapping
@@ -88,8 +94,14 @@ public class AnimalController {
 
     // Exclui o registro de um animal no banco de dados através do ID fornecido na URL
     @GetMapping("/excluir/{id}")
-    public String excluirAnimal(@PathVariable Long id) {
-        animalRepository.deleteById(id);
+    public String excluirAnimal(@PathVariable Long id, org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+        // Verifica se existem serviços prestados para este animal
+        if (lancamentoRepository.existsByAnimalId(id)) { // Precisa injetar o lancamentoRepository no AnimalController!
+            redirectAttributes.addFlashAttribute("mensagemErro",
+                    "Erro: Não é possível excluir este pet pois ele já possui serviços registrados no histórico.");
+        } else {
+            animalRepository.deleteById(id);
+        }
         return "redirect:/animais";
     }
 }

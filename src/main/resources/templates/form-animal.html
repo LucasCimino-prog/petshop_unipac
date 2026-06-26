@@ -3,74 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <title>Novo Animal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-<h1>Cadastrar Pet</h1>
+<body class="bg-light">
 
-<div th:if="${mensagemErro}" style="color: red; font-weight: bold; background-color: #fee; padding: 10px; border: 1px solid red; margin-bottom: 15px;">
-    <span th:text="${mensagemErro}"></span>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0 text-center">Cadastrar / Editar Pet</h4>
+                </div>
+                <div class="card-body p-4">
+
+                    <div th:if="${mensagemErro}" class="alert alert-danger fw-bold shadow-sm" role="alert">
+                        <span th:text="${mensagemErro}"></span>
+                    </div>
+
+                    <form th:action="@{/animais/salvar}" th:object="${animal}" method="post" enctype="multipart/form-data" class="row g-3">
+                        <input type="hidden" th:field="*{id}" />
+                        <input type="hidden" th:field="*{fotoUrl}" />
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Nome do Pet <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{nome}" class="form-control" required />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Proprietário (Dono) <span class="text-danger">*</span></label>
+                            <select th:field="*{proprietario}" class="form-select" required>
+                                <option value="">Selecione um dono...</option>
+                                <option th:each="prop : ${listaProprietarios}"
+                                        th:value="${prop.id}"
+                                        th:text="${prop.nome}"></option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Espécie (Cachorro, Gato, etc) <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{especie}" class="form-control" required />
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Raça <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{raca}" class="form-control" required />
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Sexo <span class="text-danger">*</span></label>
+                            <select th:field="*{sexo}" class="form-select" required>
+                                <option value="">Selecione...</option>
+                                <option value="Masculino">Masculino</option>
+                                <option value="Feminino">Feminino</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label fw-semibold">Idade (anos) <span class="text-danger">*</span></label>
+                            <input type="number" th:field="*{idade}" class="form-control" required />
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label fw-semibold">Peso (Kg) <span class="text-danger">*</span></label>
+                            <input type="number" step="0.01" th:field="*{peso}" class="form-control" required />
+                        </div>
+
+                        <div class="col-md-8">
+                            <label class="form-label fw-semibold">Foto do Pet (Opcional)</label>
+                            <input type="file" name="file" accept="image/*" class="form-control" />
+
+                            <div th:if="${animal.fotoUrl != null}" class="form-text mt-2">
+                                <span class="badge bg-info text-dark">Foto atual já salva: <span th:text="${animal.fotoUrl}"></span></span>
+                            </div>
+                        </div>
+
+                        <div class="col-12 mt-4 d-flex justify-content-between">
+                            <a th:href="@{/animais}" class="btn btn-secondary px-4">Cancelar</a>
+                            <button type="submit" class="btn btn-success fw-bold px-4">Salvar Animal</button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
 </div>
 
-<form th:action="@{/animais/salvar}" th:object="${animal}" method="post" enctype="multipart/form-data">
-    <input type="hidden" th:field="*{id}" />
-    <input type="hidden" th:field="*{fotoUrl}" />
-
-    <div>
-        <label>Nome do Pet:</label>
-        <input type="text" th:field="*{nome}" required />
-    </div>
-    <br>
-    <div>
-        <label>Espécie (Cachorro, Gato, etc):</label>
-        <input type="text" th:field="*{especie}" required />
-    </div>
-    <br>
-    <div>
-        <label>Raça:</label>
-        <input type="text" th:field="*{raca}" required />
-    </div>
-    <br>
-    <div>
-        <label>Idade (anos):</label>
-        <input type="number" th:field="*{idade}" required />
-    </div>
-    <br>
-    <div>
-        <label>Sexo:</label>
-        <select th:field="*{sexo}" required>
-            <option value="">Selecione...</option>
-            <option value="Masculino">Masculino</option>
-            <option value="Feminino">Feminino</option>
-        </select>
-    </div>
-    <br>
-    <div>
-        <label>Peso (Kg):</label>
-        <input type="number" step="0.01" th:field="*{peso}" required />
-    </div>
-    <br>
-    <div>
-        <label>Foto do Pet (Opcional):</label>
-        <input type="file" name="file" accept="image/*" />
-
-        <span th:if="${animal.fotoUrl != null}">
-                Foto atual: <span th:text="${animal.fotoUrl}"></span>
-            </span>
-    </div>
-    <br>
-    <div>
-        <label>Proprietário (Dono):</label>
-        <select th:field="*{proprietario}" required>
-            <option value="">Selecione um dono...</option>
-            <option th:each="prop : ${listaProprietarios}"
-                    th:value="${prop.id}"
-                    th:text="${prop.nome}"></option>
-        </select>
-    </div>
-    <br>
-
-    <button type="submit">Salvar Animal</button>
-    <a th:href="@{/animais}">Cancelar</a>
-</form>
 </body>
 </html>

@@ -1,5 +1,6 @@
 package com.unipac.petshop.controller;
 
+import com.unipac.petshop.repository.AnimalRepository;
 import com.unipac.petshop.repository.ProprietarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,6 +17,8 @@ public class ProprietarioController {
 
     @Autowired
     private ProprietarioRepository proprietarioRepository;
+    @Autowired
+    private AnimalRepository animalRepository;
 
     // Retorna a página com a tabela contendo todos os proprietários cadastrados no banco
     @GetMapping
@@ -65,8 +68,16 @@ public class ProprietarioController {
 
     // Exclui fisicamente o registro de um proprietário do banco de dados através do ID
     @GetMapping("/excluir/{id}")
-    public String excluirProprietario(@PathVariable Long id) {
-        proprietarioRepository.deleteById(id);
+    public String excluirProprietario(@PathVariable Long id, org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+
+        java.util.List<com.unipac.petshop.model.Animal> animais = animalRepository.findByProprietarioId(id);
+
+        if (!animais.isEmpty()) {
+            redirectAttributes.addFlashAttribute("mensagemErro",
+                    "Erro: Não é possível excluir este proprietário pois ele possui animais ativos cadastrados.");
+        } else {
+            proprietarioRepository.deleteById(id);
+        }
         return "redirect:/proprietarios";
     }
 }

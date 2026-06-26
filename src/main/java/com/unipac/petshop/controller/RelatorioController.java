@@ -24,6 +24,7 @@ public class RelatorioController {
 
     @Autowired
     private ProprietarioRepository proprietarioRepository;
+
     @Autowired
     private ServicoRepository servicoRepository;
 
@@ -42,24 +43,46 @@ public class RelatorioController {
         // Carrega serviços para o filtro
         model.addAttribute("listaServicos", servicoRepository.findAll());
 
-        // Verifica se o usuário preencheu todos os filtros (cliente e intervalo de datas) antes de realizar a consulta
-        if (proprietarioId != null && dataInicio != null && dataFim != null) {
+        // Verifica se O QUALQUER um dos filtros foi preenchido
+        boolean fezBusca = (proprietarioId != null || servicoId != null || (dataInicio != null && dataFim != null));
 
-            // Executa a consulta cruzada no banco de dados para buscar apenas os serviços do dono e período especificados
-            List<LancamentoServico> resultados = lancamentoRepository
-                    .findByAnimalProprietarioIdAndDataBetween(proprietarioId, dataInicio, dataFim);
+        if (fezBusca) {
+            List<LancamentoServico> resultados;
 
+            // 1. Filtro Base de Data: Tem data de início e fim?
+            if (dataInicio != null && dataFim != null) {
+                resultados = lancamentoRepository.findByDataBetweenOrderByDataDesc(dataInicio, dataFim);
+            } else {
+                // Se NÃO tem data, busca todo o lucro histórico (de ontem para trás)
+                resultados = lancamentoRepository.findByDataLessThanOrderByDataDesc(LocalDate.now());
+            }
+
+            // 2. Filtro de Cliente (Aplica apenas se o usuário selecionou alguém)
+            if (proprietarioId != null) {
+                resultados = resultados.stream()
+                        .filter(l -> l.getAnimal() != null && l.getAnimal().getProprietario().getId().equals(proprietarioId))
+                        .toList();
+            }
+
+            // 3. Filtro de Serviço (Aplica apenas se o usuário escolheu um serviço específico)
             if (servicoId != null) {
                 resultados = resultados.stream()
-                        .filter(l -> l.getServico().getId().equals(servicoId))
+                        .filter(l -> l.getServico() != null && l.getServico().getId().equals(servicoId))
                         .toList();
             }
 
             model.addAttribute("resultados", resultados);
 
-            // Calcula o faturamento total do período pesquisado somando o valor cobrado de todos os registros da lista
+            // Soma total do cenário filtrado
             double total = resultados.stream().mapToDouble(LancamentoServico::getValorCobrado).sum();
             model.addAttribute("valorTotal", total);
+            model.addAttribute("modoBusca", true);
+
+        } else {
+            // CENA PADRÃO: Visão Geral de todo o histórico sem filtros
+            List<LancamentoServico> historico = lancamentoRepository.findByDataLessThanOrderByDataDesc(LocalDate.now());
+            model.addAttribute("historicoPadrao", historico);
+            model.addAttribute("modoBusca", false);
         }
 
         return "relatorio";

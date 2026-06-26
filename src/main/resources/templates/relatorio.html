@@ -2,80 +2,146 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Relatório de Serviços</title>
+    <title>Relatório de Serviços - Pet Shop</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-<h1>Gerar Relatório por Cliente e Período</h1>
+<body class="bg-light">
 
-<form th:action="@{/relatorios}" method="get">
-    <label>Cliente (Obrigatório):</label>
-    <select name="proprietarioId" required>
-        <option value="">Selecione...</option>
-        <option th:each="prop : ${listaProprietarios}"
-                th:value="${prop.id}"
-                th:text="${prop.nome}"></option>
-    </select>
+<div class="container mt-5">
 
-    <label>Serviço (Opcional):</label>
-    <select name="servicoId">
-        <option value="">Todos os serviços...</option>
-        <option th:each="serv : ${listaServicos}"
-                th:value="${serv.id}"
-                th:text="${serv.nome}"></option>
-    </select>
-
-    <label>Data Início:</label>
-    <input type="date" name="dataInicio" required />
-
-    <label>Data Fim:</label>
-    <input type="date" name="dataFim" required />
-
-    <button type="submit">Buscar Histórico</button>
-</form>
-
-<hr>
-
-<div th:if="${resultados != null}">
-    <h2>Resultados da Busca</h2>
-
-    <div th:if="${#lists.isEmpty(resultados)}">
-        <p style="color: red; font-weight: bold;">Nenhum serviço encontrado para este filtro.</p>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary fw-bold">Histórico e Relatório Financeiro</h2>
+        <div class="btn-group">
+            <a th:href="@{/proprietarios}" class="btn btn-outline-secondary btn-sm">Proprietários</a>
+            <a th:href="@{/animais}" class="btn btn-outline-secondary btn-sm">Animais</a>
+            <a th:href="@{/servicos}" class="btn btn-outline-secondary btn-sm">Serviços</a>
+            <a th:href="@{/lancamentos}" class="btn btn-outline-secondary btn-sm">Lançamentos</a>
+        </div>
     </div>
 
-    <div th:if="${!#lists.isEmpty(resultados)}">
+    <!-- Filtro de Busca Dinâmico (Todos os campos opcionais) -->
+    <div class="card shadow-sm mb-4 border-0">
+        <div class="card-body bg-white rounded">
+            <form th:action="@{/relatorios}" method="get" class="row g-3 align-items-end">
 
-        <div style="background-color: #f0f0f0; padding: 10px; margin-bottom: 10px;">
-            <h4 th:text="'Cliente: ' + ${resultados[0].animal.proprietario.nome}"></h4>
-            <p th:text="'CPF: ' + ${resultados[0].animal.proprietario.cpf} + ' | Telefone: ' + ${resultados[0].animal.proprietario.telefone}"></p>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Cliente</label>
+                    <!-- "required" removido -->
+                    <select name="proprietarioId" class="form-select">
+                        <option value="">Todos os clientes...</option>
+                        <option th:each="prop : ${listaProprietarios}"
+                                th:value="${prop.id}"
+                                th:text="${prop.nome}"></option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Serviço</label>
+                    <select name="servicoId" class="form-select">
+                        <option value="">Todos os serviços...</option>
+                        <option th:each="serv : ${listaServicos}"
+                                th:value="${serv.id}"
+                                th:text="${serv.nome}"></option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold">Data Início</label>
+                    <input type="date" name="dataInicio" class="form-control" />
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold">Data Fim</label>
+                    <input type="date" name="dataFim" class="form-control" />
+                </div>
+
+                <div class="col-md-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary w-100 fw-bold">Buscar</button>
+                    <a th:if="${modoBusca}" th:href="@{/relatorios}" class="btn btn-outline-secondary w-100 fw-bold">Limpar</a>
+                </div>
+            </form>
+            <div class="form-text mt-2 text-muted">
+                * Preencha os campos que desejar. Para filtrar por período, preencha a Data de Início e Fim.
+            </div>
+        </div>
+    </div>
+
+    <!-- BLOCO 1: VISÃO GERAL -->
+    <div th:if="${!modoBusca}">
+        <h5 class="text-secondary mb-3 fw-bold"><i class="bi bi-clock-history"></i> Histórico Geral (Todos os Serviços Concluídos)</h5>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-0 table-responsive">
+                <table class="table table-striped table-hover mb-0 align-middle">
+                    <thead class="table-secondary">
+                    <tr>
+                        <th class="ps-4">Data</th>
+                        <th>Dono</th>
+                        <th>Pet</th>
+                        <th>Serviço</th>
+                        <th class="text-end pe-4">Valor Cobrado</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="lan : ${historicoPadrao}">
+                        <td class="ps-4 fw-semibold" th:text="${#temporals.format(lan.data, 'dd/MM/yyyy')}"></td>
+                        <td th:text="${lan.animal != null ? lan.animal.proprietario.nome : 'N/A'}"></td>
+                        <td th:text="${lan.animal != null ? lan.animal.nome : 'N/A'}"></td>
+                        <td th:text="${lan.servico != null ? lan.servico.nome : 'N/A'}"></td>
+                        <td class="text-end pe-4 text-success fw-bold" th:text="'R$ ' + ${#numbers.formatDecimal(lan.valorCobrado, 1, 'POINT', 2, 'COMMA')}"></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(historicoPadrao)}">
+                        <td colspan="5" class="text-center text-muted py-4">Nenhum serviço anterior registrado no histórico.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- BLOCO 2: RESULTADO DA BUSCA DINÂMICA -->
+    <div th:if="${modoBusca}">
+        <h5 class="text-primary mb-3 fw-bold">Resultado da Pesquisa</h5>
+
+        <div th:if="${#lists.isEmpty(resultados)}" class="alert alert-warning shadow-sm border-0" role="alert">
+            Nenhum dado financeiro encontrado com os filtros selecionados.
         </div>
 
-        <table border="1">
-            <thead>
-            <tr>
-                <th>Data</th>
-                <th>Animal</th>
-                <th>Serviço</th>
-                <th>Valor (R$)</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="lan : ${resultados}">
-                <td th:text="${#temporals.format(lan.data, 'dd/MM/yyyy')}"></td>
-                <td th:text="${lan.animal.nome}"></td>
-                <td th:text="${lan.servico.nome}"></td>
-                <td th:text="${lan.valorCobrado}"></td>
-            </tr>
-            </tbody>
-        </table>
+        <div th:if="${!#lists.isEmpty(resultados)}" class="card shadow-sm border-0">
+            <div class="card-body p-0 table-responsive">
+                <table class="table table-striped table-hover mb-0 align-middle">
+                    <thead class="table-primary">
+                    <tr>
+                        <th class="ps-4">Data</th>
+                        <th>Cliente</th>
+                        <th>Animal</th>
+                        <th>Serviço</th>
+                        <th class="text-end pe-4">Valor Cobrado</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="lan : ${resultados}">
+                        <td class="ps-4 fw-semibold" th:text="${#temporals.format(lan.data, 'dd/MM/yyyy')}"></td>
+                        <!-- Como a busca pode misturar clientes, a coluna de nome de cliente é essencial aqui -->
+                        <td th:text="${lan.animal != null ? lan.animal.proprietario.nome : 'N/A'}"></td>
+                        <td th:text="${lan.animal.nome}"></td>
+                        <td th:text="${lan.servico.nome}"></td>
+                        <td class="text-end pe-4 text-success fw-bold" th:text="'R$ ' + ${#numbers.formatDecimal(lan.valorCobrado, 1, 'POINT', 2, 'COMMA')}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
 
-        <h3 style="color: green;">Total do Período: R$ <span th:text="${valorTotal}">0.00</span></h3>
+            <div class="card-footer bg-light text-end py-3">
+                <h4 class="mb-0 text-success fw-bold">
+                    Total Filtrado: R$ <span th:text="${#numbers.formatDecimal(valorTotal, 1, 'POINT', 2, 'COMMA')}">0,00</span>
+                </h4>
+            </div>
+        </div>
     </div>
+
 </div>
 
-<br>
-<a th:href="@{/proprietarios}">Proprietários</a> |
-<a th:href="@{/animais}">Animais</a> |
-<a th:href="@{/servicos}">Serviços</a> |
-<a th:href="@{/lancamentos}">Lançamentos</a>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

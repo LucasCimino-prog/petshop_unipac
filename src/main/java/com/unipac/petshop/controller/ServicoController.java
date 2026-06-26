@@ -1,6 +1,7 @@
 package com.unipac.petshop.controller;
 
 import com.unipac.petshop.model.Servico;
+import com.unipac.petshop.repository.LancamentoServicoRepository;
 import com.unipac.petshop.repository.ServicoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,6 +17,9 @@ public class ServicoController {
 
     @Autowired
     private ServicoRepository servicoRepository;
+
+    @Autowired
+    private LancamentoServicoRepository lancamentoRepository;
 
     // Retorna a página contendo a tabela com todos os serviços disponíveis cadastrados no banco
     @GetMapping
@@ -65,8 +69,14 @@ public class ServicoController {
 
     // Remove fisicamente o registro de um serviço do banco de dados utilizando o seu ID
     @GetMapping("/excluir/{id}")
-    public String excluirServico (@PathVariable Long id){
-        servicoRepository.deleteById(id);
+    public String excluirServico(@PathVariable Long id, org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+
+        if (lancamentoRepository.existsByServicoId(id)) {
+            redirectAttributes.addFlashAttribute("mensagemErro",
+                    "Erro: Não é possível excluir este serviço pois ele já possui lançamentos no histórico financeiro.");
+        } else {
+            servicoRepository.deleteById(id);
+        }
         return "redirect:/servicos";
     }
 }

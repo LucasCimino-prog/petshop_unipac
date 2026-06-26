@@ -26,10 +26,11 @@ public class LancamentoServicoController {
     @Autowired
     private ServicoRepository servicoRepository;
 
-    // Retorna a página principal contendo a tabela com o histórico completo de serviços prestados
+    // Retorna a página principal contendo a tabela de agendamentos de serviços.
     @GetMapping
     public String listarLancamentos(Model model) {
-        model.addAttribute("listaLancamentos", lancamentoRepository.findAll());
+        model.addAttribute("listaLancamentos",
+                lancamentoRepository.findByDataGreaterThanEqualOrderByDataAsc(LocalDate.now()));
         return "lancamentos";
     }
 
@@ -48,9 +49,16 @@ public class LancamentoServicoController {
 
     // Busca um lançamento existente pelo ID e recarrega a tela de formulário com os dados preenchidos para edição
     @GetMapping("/editar/{id}")
-    public String editarLancamento(@PathVariable Long id, Model model) {
+    public String editarLancamento(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         LancamentoServico lancamento = lancamentoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + id));
+
+        // Trava de segurança: impede a edição se a data já passou
+        if (lancamento.getData().isBefore(LocalDate.now())) {
+            redirectAttributes.addFlashAttribute("mensagemErro",
+                    "Acesso Negado: Este agendamento já passou e virou histórico. Ele não pode mais ser alterado.");
+            return "redirect:/lancamentos";
+        }
 
         model.addAttribute("lancamento", lancamento);
         model.addAttribute("listaAnimais", animalRepository.findAll());
@@ -60,7 +68,16 @@ public class LancamentoServicoController {
 
     // Remove um registro de atendimento do banco de dados com base no ID fornecido
     @GetMapping("/excluir/{id}")
-    public String excluirLancamento(@PathVariable Long id) {
+    public String excluirLancamento(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        LancamentoServico lancamento = lancamentoRepository.findById(id).orElse(null);
+
+        // Trava de segurança: impede a exclusão se a data já passou
+        if (lancamento != null && lancamento.getData().isBefore(LocalDate.now())) {
+            redirectAttributes.addFlashAttribute("mensagemErro",
+                    "Acesso Negado: Este agendamento já passou e virou histórico. Ele não pode ser excluído.");
+            return "redirect:/lancamentos";
+        }
+
         lancamentoRepository.deleteById(id);
         return "redirect:/lancamentos";
     }
